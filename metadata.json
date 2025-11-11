@@ -1,0 +1,5 @@
+{
+  "name": "Copy of AI Documentation Studio",
+  "description": "An interactive studio to generate, validate, and finalize audience-specific API documentation from a JSON specification using generative AI.",
+  "requestFramePermissions": []
+}
