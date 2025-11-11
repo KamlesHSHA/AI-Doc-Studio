@@ -1,5 +1,4 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { AutoFixReport, ValidationIssue } from "../types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
@@ -33,9 +32,9 @@ const FIX_RESPONSE_SCHEMA = {
 };
 
 export async function autoFixSpec(
-  originalSpec: string,
-  issues: ValidationIssue[]
-): Promise<AutoFixReport> {
+  originalSpec,
+  issues
+) {
   const prompt = `
 Original API Spec (as a JSON string):
 \`\`\`json
@@ -68,18 +67,16 @@ Please provide the corrected API spec as a valid JSON-formatted string, along wi
     const parsedResponse = JSON.parse(jsonString);
     
     let fixedSpecString = originalSpec;
-    let finalStatus: "success" | "partial" = "success";
+    let finalStatus = "success";
     let summary = parsedResponse.summary;
 
     try {
-        // The AI now returns a string, so we parse it to validate and then re-stringify to format it.
         const fixedSpecObject = JSON.parse(parsedResponse.fixed_spec_string);
         fixedSpecString = JSON.stringify(fixedSpecObject, null, 2);
     } catch (e) {
         console.error("AI auto-fix returned a non-JSON string for the spec:", parsedResponse.fixed_spec_string);
         finalStatus = 'partial';
         summary += " (Warning: The corrected spec returned by the AI was not valid JSON.)";
-        // Use the raw string from the AI so the user can see it
         fixedSpecString = parsedResponse.fixed_spec_string;
     }
 
